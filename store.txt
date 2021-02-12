@@ -1,38 +1,20 @@
-
-class ExampleApp extends React.Component {
-  constructor () {
-    super();
-    this.state = {
-      showModal: false
-    };
-    
-    this.handleOpenModal = this.handleOpenModal.bind(this);
-    this.handleCloseModal = this.handleCloseModal.bind(this);
-  }
-  
-  handleOpenModal () {
-    this.setState({ showModal: true });
-  }
-  
-  handleCloseModal () {
-    this.setState({ showModal: false });
-  }
-  
-  render () {
+type MyProps = {
+  // using `interface` is also ok
+  message: string;
+};
+type MyState = {
+  count: number; // like this
+};
+class App extends React.Component<MyProps, MyState> {
+  state: MyState = {
+    // optional second annotation for better type inference
+    count: 0,
+  };
+  render() {
     return (
       <div>
-        <button onClick={this.handleOpenModal}>Trigger Modal</button>
-        <ReactModal 
-           isOpen={this.state.showModal}
-           contentLabel="Minimal Modal Example"
-        >
-          <button onClick={this.handleCloseModal}>Close Modal</button>
-        </ReactModal>
+        {this.props.message} {this.state.count}
       </div>
     );
   }
 }
-
-const props = {};
-
-ReactDOM.render(<ExampleApp {...props} />, document.getElementById('main'))
