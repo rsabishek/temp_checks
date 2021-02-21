@@ -1,4 +1,4 @@
-# temp_checks
+# temp_checks errors list
 
 
 useEffect(() => {
@@ -11,3 +11,9 @@ useEffect(() => {
 
 react hooks:
 https://medium.com/benextcompany/refactoring-react-class-components-to-typescript-functional-components-with-hooks-a4f42b2bd7b5
+
+
+
+datepicker error:
+12.34 gs toolkit version.
+npm install jquery
