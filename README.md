@@ -12,9 +12,9 @@ useEffect(() => {
 react hooks:
 https://medium.com/benextcompany/refactoring-react-class-components-to-typescript-functional-components-with-hooks-a4f42b2bd7b5
 
-typescript passing props to child comp:
-https://dev.to/mconner89/passing-props-in-react-using-typescript-20lm
-
+typescript passing props to child comp (function component):
+prefer this only : https://stackoverflow.com/questions/61432089/react-typescript-how-send-props-and-use-it-in-child-component
+reference : https://dev.to/mconner89/passing-props-in-react-using-typescript-20lm
 
 
 datepicker error:
