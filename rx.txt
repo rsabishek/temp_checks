@@ -1,20 +1,15 @@
-<Form>
-  <Form.Group controlId="formBasicEmail">
-    <Form.Label>Email address</Form.Label>
-    <Form.Control type="email" placeholder="Enter email" />
-    <Form.Text className="text-muted">
-      We'll never share your email with anyone else.
-    </Form.Text>
-  </Form.Group>
+const response = await fetch(myUrl, {
+  method: 'POST',
+  body: content,
+  headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'} });
 
-  <Form.Group controlId="formBasicPassword">
-    <Form.Label>Password</Form.Label>
-    <Form.Control type="password" placeholder="Password" />
-  </Form.Group>
-  <Form.Group controlId="formBasicCheckbox">
-    <Form.Check type="checkbox" label="Check me out" />
-  </Form.Group>
-  <Button variant="primary" type="submit">
-    Submit
-  </Button>
-</Form>
+if (!response.ok) { /* Handle */ }
+
+// If you care about a response:
+if (response.body !== null) {
+  // body is ReadableStream<Uint8Array>
+  // parse as needed, e.g. reading directly, or
+  const asString = new TextDecoder("utf-8").decode(response.body);
+  // and further:
+  const asJSON = JSON.parse(asString);  // implicitly 'any', make sure to verify type on runtime.
+}
