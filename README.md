@@ -25,3 +25,7 @@ npm install jquery
 Fetch API and Promises:
 This tells about Promise(reject, response):
 https://codeburst.io/the-es6-promises-87a979ab27e4
+
+
+resolve localhost certficate error: chrome flags edit:
+https://stackoverflow.com/questions/47700269/google-chrome-localhost-neterr-cert-authority-invalid
