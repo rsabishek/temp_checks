@@ -20,3 +20,8 @@ reference : https://dev.to/mconner89/passing-props-in-react-using-typescript-20l
 datepicker error:
 12.34 gs toolkit version.
 npm install jquery
+
+
+Fetch API and Promises:
+This tells about Promise(reject, response):
+https://codeburst.io/the-es6-promises-87a979ab27e4
