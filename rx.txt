@@ -30,3 +30,15 @@ const publicIp = require('public-ip');
 	console.log(await publicIp.v6());
 	//=> 'fe80::200:f8ff:fe21:67cf'
 })();
+
+
+
+ fetch('https://api.ipify.org?format=jsonp?callback=?', {
+      method: 'GET',
+      headers: {},
+    })
+    .then(res => {
+      return res.text()
+    }).then(ip => {
+      console.log('ip', ip);
+    });
