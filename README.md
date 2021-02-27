@@ -29,3 +29,8 @@ https://codeburst.io/the-es6-promises-87a979ab27e4
 
 resolve localhost certficate error: chrome flags edit:
 https://stackoverflow.com/questions/47700269/google-chrome-localhost-neterr-cert-authority-invalid
+
+
+get client IP address:
+using geolocation-db.com.
+https://stackoverflow.com/questions/49257729/retrieving-the-client-request-ip-address
