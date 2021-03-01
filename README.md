@@ -40,3 +40,5 @@ async issue within React useEffect Hooks:
 setState is async.
 https://stackoverflow.com/questions/55521912/multiple-fetch-data-axios-with-react-hooks
 
+handling async errors:
+https://www.valentinog.com/blog/await-react/
