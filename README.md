@@ -1,4 +1,4 @@
-# temp_checks errors list
+# References
 
 
 useEffect(() => {
@@ -34,3 +34,9 @@ https://stackoverflow.com/questions/47700269/google-chrome-localhost-neterr-cert
 get client IP address:
 using geolocation-db.com.
 https://stackoverflow.com/questions/49257729/retrieving-the-client-request-ip-address
+
+
+async issue within React useEffect Hooks:
+setState is async.
+https://stackoverflow.com/questions/55521912/multiple-fetch-data-axios-with-react-hooks
+
