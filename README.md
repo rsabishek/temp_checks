@@ -42,3 +42,13 @@ https://stackoverflow.com/questions/55521912/multiple-fetch-data-axios-with-reac
 
 handling async errors:
 https://www.valentinog.com/blog/await-react/
+
+
+
+
+
+optimisations for add-user:
+1 - include redux?
+2 - bage page link to is fine? any optimisation need to be done? 
+3 - Add Form code optim.
+4 - error handling.
