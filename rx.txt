@@ -61,3 +61,15 @@ var seconds = "0" + date.getSeconds();
 var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
 
 console.log(formattedTime);
+
+
+
+.footer{
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: rgb(235, 195, 64);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
