@@ -73,3 +73,7 @@ console.log(formattedTime);
   left: 0;
   width: 100%;
 }
+
+
+regex match:
+/^[^\s@]+@[^\s@]+$/
