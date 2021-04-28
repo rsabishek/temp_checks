@@ -1,3 +1,6 @@
 
 
 <Route render={() => <Redirect to={{pathname: "/"}} />} />
+
+<Route path="/greeting/:name" render={(props) => <Greeting text="Hello, " {...props} />} />
+
