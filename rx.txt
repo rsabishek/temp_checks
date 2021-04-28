@@ -77,3 +77,5 @@ console.log(formattedTime);
 
 regex match:
 /^[^\s@]+@[^\s@]+$/
+
+<Route render={() => <Redirect to={{pathname: "/"}} />} />
