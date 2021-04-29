@@ -1,6 +1,7 @@
+(async () => {
+	console.log(await publicIp.v4());
+	//=> '46.5.21.123'
 
-
-<Route render={() => <Redirect to={{pathname: "/"}} />} />
-
-<Route path="/greeting/:name" render={(props) => <Greeting text="Hello, " {...props} />} />
-
+	console.log(await publicIp.v6());
+	//=> 'fe80::200:f8ff:fe21:67cf'
+})();
