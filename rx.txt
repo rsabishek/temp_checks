@@ -1,7 +1,12 @@
-(async () => {
-	console.log(await publicIp.v4());
-	//=> '46.5.21.123'
-
-	console.log(await publicIp.v6());
-	//=> 'fe80::200:f8ff:fe21:67cf'
-})();
+import React from 'react';
+import Enzyme, { shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+import ToggleComponent from './ToggleComponent';
+Enzyme.configure({ adapter: new Adapter() });
+describe('ToggleComponent', () => {
+  it('should show the text', () => {
+  const toggleInstance = shallow(<ToggleComponent />);
+  const element = toggleInstance.find('div div');
+  expect(element.text()).toBe('This will be toggled');
+ });
+});
