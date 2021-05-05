@@ -99,3 +99,7 @@ console.log(formattedTime);
 
 regex match:
 /^[^\s@]+@[^\s@]+$/
+
+
+testing unit: 
+https://xiaoyunyang.github.io/post/effective-unit-testing-of-react-components-with-jest-and-enzyme/
