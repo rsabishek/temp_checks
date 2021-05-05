@@ -1,22 +1,26 @@
-describe('<Input />', ()=> {
-  let wrapper;
+// ModalContainer.test.js
+import { shallow } from 'enzyme';
+import Modal from 'react-modal';
+import ModalContainer from './ModalContainer';
+import React from 'react';
 
-  beforeEach(() => {
-    wrapper = shallow(< Input/>);
-  });
+it('renders react-modal', () => {
+  const wrapper = shallow(<ModalContainer />);
+  expect(wrapper.find(Modal)).toHaveLength(1);
+});
+Or test that react-modal prop isOpen changes:
 
-  it('It has an input field', () => {
-    const input = wrapper.find('.inputField')
-    expect(input.props().value).toBe(undefined)
-  });
-  
-  it('contains a button', () => {
-    const button = <button> submit todo </button>
-    expect(wrapper.containsMatchingElement(button)).toBe(true);
-  });
+it('opens modal when button is clicked', () => {
+  const wrapper = shallow(<ModalContainer />);
+  expect(wrapper.find(Modal).prop('isOpen')).toBe(false);
 
-  it('There is a text on the button', () => {
-    const button = wrapper.find('.button');
-    expect(button.text()).toEqual('submit todo');
-  });
+  wrapper.find('button').simulate('click');
+  expect(wrapper.find(Modal).prop('isOpen')).toBe(true);
+});
+Or check that react-modal children matches what you expect:
+
+it('renders childen when modal is open', () => {
+  const wrapper = shallow(<ModalContainer>modal content</ModalContainer>);
+  expect(wrapper.find(Modal).prop('children')).toBe('modal content');
+  // expect(wrapper.find(Modal).prop('children')).toMatchSnapshot();
 });
