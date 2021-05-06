@@ -29,3 +29,6 @@ it('renders childen when modal is open', () => {
  await act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
   });
+
+
+https://dev.to/theactualgivens/testing-react-hook-state-changes-2oga
