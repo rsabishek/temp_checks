@@ -24,3 +24,8 @@ it('renders childen when modal is open', () => {
   expect(wrapper.find(Modal).prop('children')).toBe('modal content');
   // expect(wrapper.find(Modal).prop('children')).toMatchSnapshot();
 });
+
+
+ await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  });
