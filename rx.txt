@@ -31,4 +31,11 @@ it('renders childen when modal is open', () => {
   });
 
 
+good read:
 https://dev.to/theactualgivens/testing-react-hook-state-changes-2oga
+
+
+<div>
+  <h1 style="display: inline-block">Product</h1>
+  <span class="badge badge-primary" style="vertical-align: top">Version 1</span>
+</div>
