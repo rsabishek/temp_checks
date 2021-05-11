@@ -1,41 +1,12 @@
-// ModalContainer.test.js
-import { shallow } from 'enzyme';
-import Modal from 'react-modal';
-import ModalContainer from './ModalContainer';
-import React from 'react';
+babel.config.js (only used by jest)
 
-it('renders react-modal', () => {
-  const wrapper = shallow(<ModalContainer />);
-  expect(wrapper.find(Modal)).toHaveLength(1);
-});
-Or test that react-modal prop isOpen changes:
+module.exports = {presets: ['@babel/preset-env']}
+jest.config.js
 
-it('opens modal when button is clicked', () => {
-  const wrapper = shallow(<ModalContainer />);
-  expect(wrapper.find(Modal).prop('isOpen')).toBe(false);
-
-  wrapper.find('button').simulate('click');
-  expect(wrapper.find(Modal).prop('isOpen')).toBe(true);
-});
-Or check that react-modal children matches what you expect:
-
-it('renders childen when modal is open', () => {
-  const wrapper = shallow(<ModalContainer>modal content</ModalContainer>);
-  expect(wrapper.find(Modal).prop('children')).toBe('modal content');
-  // expect(wrapper.find(Modal).prop('children')).toMatchSnapshot();
-});
-
-
- await act(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 0));
-  });
-
-
-good read:
-https://dev.to/theactualgivens/testing-react-hook-state-changes-2oga
-
-
-<div>
-  <h1 style="display: inline-block">Product</h1>
-  <span class="badge badge-primary" style="vertical-align: top">Version 1</span>
-</div>
+module.exports = {
+  preset: 'ts-jest',
+  transform: {
+    '^.+\\.(ts|tsx)?$': 'ts-jest',
+    "^.+\\.(js|jsx)$": "babel-jest",
+  }
+};
