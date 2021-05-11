@@ -53,3 +53,13 @@ module.exports = function (api) {
     "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts"],
     "include": ["./src/**/*.tsx", "./src/**/*.ts"]
   }
+
+
+ module.exports = {
+  roots: ['<rootDir>/src'],
+  transform: {
+    '^.+\\.tsx?$': 'ts-jest',
+  },
+  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$',
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+}
