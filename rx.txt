@@ -95,3 +95,10 @@ module.exports = {
   }
  },
  "moduleDirectories": ["node_modules", "src"]
+ 
+ 
+ module.exports = {
+  moduleNameMapper: {
+    '\\.(css|less)$': '<rootDir>/test/jest/__mocks__/styleMock.js',
+  }
+};
