@@ -1,104 +1,26 @@
-babel.config.js (only used by jest)
+import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
+import { render, fireEvent } from '@testing-library/react';
+import RouteNotFound from './NotFound';
 
-module.exports = {presets: ['@babel/preset-env']}
-jest.config.js
+const mockHistoryPush = jest.fn();
 
-module.exports = {
-  preset: 'ts-jest',
-  transform: {
-    '^.+\\.(ts|tsx)?$': 'ts-jest',
-    "^.+\\.(js|jsx)$": "babel-jest",
-  }
-};
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useHistory: () => ({
+    push: mockHistoryPush,
+  }),
+}));
 
+describe('RouteNotFound', () => {
+  it('Redirects to correct URL on click', () => {
+    const { getByRole } = render(
+      <MemoryRouter>
+        <RouteNotFound />
+      </MemoryRouter>,
+    );
 
-module.exports = function (api) {
-  const presets = [
-      '@babel/preset-env',
-    '@babel/preset-react',
-    '@babel/preset-flow'
-  ];
-  const plugins = [
-    '@babel/plugin-transform-runtime',
-  ];
-
-  /** this is just for minimal working purposes,
-     * for testing larger applications it is
-     * advisable to cache the transpiled modules in
-     * node_modules/.bin/.cache/@babel/register* */
-  api.cache(false);
-
-  return {
-    presets,
-    plugins
-  };
-};
-
-
-"transform": {
-       "^.+\\.(ts|tsx|js|jsx)$": "ts-jest"
-    },
-
-
-
-{
-    "compilerOptions": {
-     ...
-
-      "types": ["reflect-metadata", "jest"],
-      "typeRoots": ["./types", "./node_modules/@types"]
-
-     ...
-    },
-    "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts"],
-    "include": ["./src/**/*.tsx", "./src/**/*.ts"]
-  }
-
-
- module.exports = {
-  roots: ['<rootDir>/src'],
-  transform: {
-    '^.+\\.tsx?$': 'ts-jest',
-  },
-  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$',
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-}
-
-
-
-//5:01pm
-module.exports = {
-  "roots": [
-    "<rootDir>/src"
-  ],
-  "testMatch": [
-    "**/__tests__/**/*.+(ts|tsx|js)",
-    "**/?(*.)+(spec|test).+(ts|tsx|js)"
-  ],
-  "transform": {
-    "^.+\\.(ts|tsx)$": "ts-jest"
-  },
-}
-
-//05:26pm
- "setupFiles": ["<rootDir>/src/setupTests.js"],
- "testRegex": "/*.test.js$",
- "collectCoverage": true,
- "coverageReporters": ["lcov"],
- "coverageDirectory": "test-coverage",
- "coverageThreshold": {
-  "global": {
-  "branches": 0,
-  "functions": 0,
-  "lines": 0,
-  "statements": 0
-  }
- },
- "moduleDirectories": ["node_modules", "src"]
- 
- 
- module.exports = {
-  moduleNameMapper: {
-    '\\.(css|less)$': '<rootDir>/test/jest/__mocks__/styleMock.js',
-  }
-};
+    fireEvent.click(getByRole('button'));
+    expect(mockHistoryPush).toHaveBeenCalledWith('/help');
+  });
+});
