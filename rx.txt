@@ -1,5 +1,3 @@
-SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE, COLUMN_DEFAULT
-  FROM INFORMATION_SCHEMA.COLUMNS
-  WHERE table_name = 'mytable'
-  
-  https://stackoverflow.com/questions/29631518/how-to-block-referral-traffic-from-multiple-referrers-and-subdomains-in-htacces
+<div class="form-group pull-right">
+    <input type="text" class="search form-control" placeholder="What you looking for?">
+</div>
