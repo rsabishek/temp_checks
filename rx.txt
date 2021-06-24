@@ -1,8 +1,14 @@
+import React from 'react'
 
- // mark our window object to "know" when it gets reloaded
-  cy.window().then(w => w.beforeReload = true)
-  // initially the new property is there
-  cy.window().should('have.prop', 'beforeReload', true)
-  cy.get('#button').click()
-  // after reload the property should be gone
-  cy.window().should('not.have.prop', 'beforeReload')
+const PageNotFound = () => {
+    return (
+        <div id="wrapper">
+            <img src="https://i.imgur.com/qIufhof.png" />
+            <div id="info">
+                <h3>This page could not be found</h3>
+            </div>
+        </div >
+    )
+}
+
+export default PageNotFound
