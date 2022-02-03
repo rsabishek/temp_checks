@@ -36,3 +36,59 @@ bool insert(int val) Inserts an item val into the set if not present. Returns tr
 bool remove(int val) Removes an item val from the set if present. Returns true if the item was present, false otherwise.
 int getRandom() Returns a random element from the current set of elements (it's guaranteed that at least one element exists when this method is called). Each element must have the same probability of being returned.
 You must implement the functions of the class such that each function works in average O(1) time complexity.
+
+
+
+/* Problem Name is &&& Finding Deepest Leaves Sum in a Binary Tree &&& PLEASE DO NOT REMOVE THIS LINE. */
+
+/*
+** Instructions to candidate.
+**   
+** Implement the Solution class: 
+** Solution() Initializes the Solution object.
+**
+**
+**
+**
+** 
+** 
+**   
+*/
+
+import java.io.*;
+import java.util.*;
+
+ public class Node {
+     int val;
+     Node left;
+     Node right;
+     Node() {}
+     Node(int val) { this.val = val; }
+     Node(int val, Node left, Node right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+     }
+}
+ 
+class Solution {
+
+	public int deepestLeavesSum(Node root) {
+        
+    }
+	
+	
+  /*
+   * Execution entry point.
+   */
+	public static void main(String[] args)
+	{
+	    System.out.println("");
+		Solution soln = new Solution();
+ 
+   
+ 
+  }
+}
+
+
