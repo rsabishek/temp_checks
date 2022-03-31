@@ -1,8 +1,22 @@
-import { profileReducer } from "slices/profile";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { changeEmail } from "slices/profile";
+import { TStore } from "store";
 
-const reducer = {
-  profileReducer
-  // another reducers (if we have)
+const App = () => {
+  const dispatch = useDispatch();
+  const { email } = useSelector((state: TStore) => state.profileReducer);
+
+  console.log(email);
+
+  const handleEmailChange = () => {
+    dispatch(changeEmail({ email: "newEmail@gmail.com" }));
+  };
+  return (
+    <div>
+      <button onClick={handleEmailChange}>Change email</button>
+      <h2>Email - {email}</h2>
+    </div>
+  );
 };
-
-export default reducer;
+export default App;
