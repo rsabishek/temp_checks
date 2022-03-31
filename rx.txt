@@ -1,4 +1,8 @@
-import { configureStore } from "@reduxjs/toolkit";
-import reducer from "./reducer/reducer";
+import { profileReducer } from "slices/profile";
 
-export const store = configureStore({ reducer });
+const reducer = {
+  profileReducer
+  // another reducers (if we have)
+};
+
+export default reducer;
