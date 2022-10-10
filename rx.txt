@@ -1,22 +1,17 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { changeEmail } from "slices/profile";
-import { TStore } from "store";
+#gs 
 
-const App = () => {
-  const dispatch = useDispatch();
-  const { email } = useSelector((state: TStore) => state.profileReducer);
 
-  console.log(email);
+Swati
+Swati is good at explaining things in a clear way. She's been a quick learner and her contributions to our OneGS team have been amazing. I could recollect very insightful code review sessions & discussions with her and her technical prowess is spot-on. I wish her good luck in her career. 
 
-  const handleEmailChange = () => {
-    dispatch(changeEmail({ email: "newEmail@gmail.com" }));
-  };
-  return (
-    <div>
-      <button onClick={handleEmailChange}>Change email</button>
-      <h2>Email - {email}</h2>
-    </div>
-  );
-};
-export default App;
+Improve:
+
+
+Pooja:
+Pooja is always known for her solid technical skills in design & development. Right from my initial days with OneGS, I was quite fortunate to have her as a mentor figure and she gave me the freedom to explore various stuff for the onegs-idp-ui. These experiments helped in making sure we chose right components for the UI stack and also helped a lot with my learning front.
+Pooja is a super quick learner as well and whenever we have a new sprint planning to discuss she always makes sure we have the basic requirements ready to fire up further.
+
+effectiveness improve:
+Pooja is an effective manager and is quite good at explaining technical stuff based on the target audience. In the future, she can further harness that quality to articulate the business needs along with the technicalities. This can help the team to get a bigger picture.
+
+
