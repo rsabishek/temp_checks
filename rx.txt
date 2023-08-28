@@ -1,0 +1,34 @@
+OAuth Client Management - Custom Terraform Provider
+
+The OAuth Client Management provider is used to interact with the OAuth Client ID related resources supported by the OAuth Client Management API. The provider needs to be configured with the proper credentials before it can be used.
+
+Example Usage:
+# Configure the PingFederate provider
+provider "oauth-client-management" {
+  base_url   = "https://"
+  username   = "admin"
+  password   = "yourpassword"
+}
+
+# Define an OAuth client resource
+resource "pingfederate_oauth_client" "example_client" {
+  # Unique identifier for the resource instance
+  client_id         = "my-client"
+  
+  # Display name for the OAuth client
+  display_name      = "My OAuth Client"
+  
+  # Redirect URIs for authorization callbacks
+  redirect_uris     = ["https://app.example.com/callback"]
+  
+  # Grant types allowed for the client
+  allowed_grant_types = ["authorization_code", "refresh_token"]
+  
+  # Scopes the client is authorized to request
+  allowed_scopes     = ["openid", "profile", "email"]
+  
+  # Whether client is enabled or not
+  enabled            = true
+}
+
+
