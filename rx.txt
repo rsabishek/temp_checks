@@ -1,18 +1,60 @@
-Annotations:
+// customhttpclient.go
 
-The configuration begins by configuring the pingfederate provider using the provider block. Replace the values of base_url, username, and password with the appropriate credentials for your PingFederate instance. Set skip_cert_verification to false to enforce certificate verification.
+package main
 
-The resource block defines the creation of an OAuth client instance using the pingfederate_oauth_client resource type.
+import (
+    "fmt"
+    "io/ioutil"
+    "net/http"
+)
 
-client_id specifies a unique identifier for the OAuth client.
+// CustomHTTPClient is a custom HTTP client that sends GET requests with a bearer token.
+type CustomHTTPClient struct {
+    BaseURL      string
+    BearerToken  string
+}
 
-display_name is a human-readable name for the OAuth client.
+// NewCustomHTTPClient creates a new CustomHTTPClient instance.
+func NewCustomHTTPClient(baseURL, bearerToken string) *CustomHTTPClient {
+    return &CustomHTTPClient{
+        BaseURL:     baseURL,
+        BearerToken: bearerToken,
+    }
+}
 
-redirect_uris is a list of URIs to which the authorization callback will be sent.
+// Get sends a GET request to the specified path and returns the response body.
+func (c *CustomHTTPClient) Get(path string) ([]byte, error) {
+    url := c.BaseURL + path
 
-allowed_grant_types lists the grant types that the OAuth client is allowed to use.
+    // Create a new HTTP client
+    client := &http.Client{}
 
-allowed_scopes lists the scopes that the OAuth client can request during authorization.
+    // Create a GET request
+    req, err := http.NewRequest("GET", url, nil)
+    if err != nil {
+        return nil, err
+    }
 
-enabled determines whether the client is enabled or not.
+    // Set the Authorization header with the bearer token
+    req.Header.Set("Authorization", "Bearer "+c.BearerToken)
 
+    // Send the request
+    resp, err := client.Do(req)
+    if err != nil {
+        return nil, err
+    }
+    defer resp.Body.Close()
+
+    // Check if the response status code is not 200 OK
+    if resp.StatusCode != http.StatusOK {
+        return nil, fmt.Errorf("API request failed with status code: %d", resp.StatusCode)
+    }
+
+    // Read the response body
+    responseBody, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return nil, err
+    }
+
+    return responseBody, nil
+}
