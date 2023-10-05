@@ -1,60 +1,86 @@
-// customhttpclient.go
-
-package main
+package provider
 
 import (
-    "fmt"
-    "io/ioutil"
-    "net/http"
+    "context"
+    "github.com/hashicorp/terraform-plugin-framework/datasource"
+    "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+    "github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// CustomHTTPClient is a custom HTTP client that sends GET requests with a bearer token.
-type CustomHTTPClient struct {
-    BaseURL      string
-    BearerToken  string
+// Ensure the implementation satisfies the expected interfaces.
+var (
+    _ datasource.DataSource              = &clientgetDataSource{}
+    _ datasource.DataSourceWithConfigure = &clientgetDataSource{}
+)
+
+// NewClientGetDataSource is a helper function to simplify the provider implementation.
+func NewClientGetDataSource() datasource.DataSource {
+    return &clientgetDataSource{}
 }
 
-// NewCustomHTTPClient creates a new CustomHTTPClient instance.
-func NewCustomHTTPClient(baseURL, bearerToken string) *CustomHTTPClient {
-    return &CustomHTTPClient{
-        BaseURL:     baseURL,
-        BearerToken: bearerToken,
+// clientgetDataSource is the data source implementation.
+type clientgetDataSource struct {
+    // You can initialize your CustomHTTPClient here
+    client *CustomHTTPClient
+}
+
+// clientgetDataSourceModel maps the data source schema data.
+type clientgetDataSourceModel struct {
+    ClientInfo types.DynamicBlock `tfsdk:"client_info"`
+}
+
+// Metadata returns the data source type name.
+func (d *clientgetDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+    resp.TypeName = req.ProviderTypeName + "_clientget"
+}
+
+// Schema defines the schema for the data source.
+func (d *clientgetDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+    resp.Schema = schema.Schema{
+        Blocks: []schema.NestedBlock{
+            {
+                Block: &schema.Block{
+                    Attributes: map[string]schema.Attribute{
+                        // Define your schema attributes here as needed
+                    },
+                },
+            },
+        },
     }
 }
 
-// Get sends a GET request to the specified path and returns the response body.
-func (c *CustomHTTPClient) Get(path string) ([]byte, error) {
-    url := c.BaseURL + path
+// Configure adds the provider configured client to the data source.
+func (d *clientgetDataSource) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+    // Create a new instance of CustomHTTPClient
+    d.client = NewCustomHTTPClient()
+}
 
-    // Create a new HTTP client
-    client := &http.Client{}
+// Read retrieves OAuth client information.
+func (d *clientgetDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+    // Make an HTTP request using the CustomHTTPClient
+    clientInfo, err := d.client.GetOAuthClientInfo()
 
-    // Create a GET request
-    req, err := http.NewRequest("GET", url, nil)
     if err != nil {
-        return nil, err
+        resp.Diagnostics.AddError(
+            "Unable to fetch OAuth client information",
+            err.Error(),
+        )
+        return
     }
 
-    // Set the Authorization header with the bearer token
-    req.Header.Set("Authorization", "Bearer "+c.BearerToken)
-
-    // Send the request
-    resp, err := client.Do(req)
-    if err != nil {
-        return nil, err
-    }
-    defer resp.Body.Close()
-
-    // Check if the response status code is not 200 OK
-    if resp.StatusCode != http.StatusOK {
-        return nil, fmt.Errorf("API request failed with status code: %d", resp.StatusCode)
+    state := clientgetDataSourceModel{
+        ClientInfo: types.DynamicBlock{
+            TypeName: "client_info",
+            Attributes: []types.Attribute{
+                {
+                    // Define your attribute mappings here based on the JSON response
+                    Name: "example_attribute",
+                    Value: types.StringValue(clientInfo["example_field"].(string)),
+                },
+            },
+        },
     }
 
-    // Read the response body
-    responseBody, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        return nil, err
-    }
-
-    return responseBody, nil
+    diags := resp.State.Set(ctx, &state)
+    resp.Diagnostics.Append(diags...)
 }
