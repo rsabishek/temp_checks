@@ -1,86 +1,33 @@
-package provider
+// main.go
+
+package main
 
 import (
-    "context"
-    "github.com/hashicorp/terraform-plugin-framework/datasource"
-    "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-    "github.com/hashicorp/terraform-plugin-framework/types"
+	"context"
+	"flag"
+	"log"
+
+	"github.com/hashicorp/terraform-plugin-framework/providerserver"
+	"goldmansachs.com/iam/onegs/oauth-client-management/internal/provider"
 )
 
-// Ensure the implementation satisfies the expected interfaces.
+// If you have specific build or versioning tools, you can use go generate for them
+// For now, we'll keep it simple
+
 var (
-    _ datasource.DataSource              = &clientgetDataSource{}
-    _ datasource.DataSourceWithConfigure = &clientgetDataSource{}
+	// this will be set by the build configuration, to appropriate values for the compiled binary.
+	version string = "dev"
 )
 
-// NewClientGetDataSource is a helper function to simplify the provider implementation.
-func NewClientGetDataSource() datasource.DataSource {
-    return &clientgetDataSource{}
-}
+func main() {
+	var debug bool
 
-// clientgetDataSource is the data source implementation.
-type clientgetDataSource struct {
-    // You can initialize your CustomHTTPClient here
-    client *CustomHTTPClient
-}
+	flag.BoolVar(&debug, "debug", false, "set to true to run the provider with support for debuggers like delve")
+	flag.Parse()
 
-// clientgetDataSourceModel maps the data source schema data.
-type clientgetDataSourceModel struct {
-    ClientInfo types.DynamicBlock `tfsdk:"client_info"`
-}
-
-// Metadata returns the data source type name.
-func (d *clientgetDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-    resp.TypeName = req.ProviderTypeName + "_clientget"
-}
-
-// Schema defines the schema for the data source.
-func (d *clientgetDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-    resp.Schema = schema.Schema{
-        Blocks: []schema.NestedBlock{
-            {
-                Block: &schema.Block{
-                    Attributes: map[string]schema.Attribute{
-                        // Define your schema attributes here as needed
-                    },
-                },
-            },
-        },
-    }
-}
-
-// Configure adds the provider configured client to the data source.
-func (d *clientgetDataSource) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-    // Create a new instance of CustomHTTPClient
-    d.client = NewCustomHTTPClient()
-}
-
-// Read retrieves OAuth client information.
-func (d *clientgetDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-    // Make an HTTP request using the CustomHTTPClient
-    clientInfo, err := d.client.GetOAuthClientInfo()
-
-    if err != nil {
-        resp.Diagnostics.AddError(
-            "Unable to fetch OAuth client information",
-            err.Error(),
-        )
-        return
-    }
-
-    state := clientgetDataSourceModel{
-        ClientInfo: types.DynamicBlock{
-            TypeName: "client_info",
-            Attributes: []types.Attribute{
-                {
-                    // Define your attribute mappings here based on the JSON response
-                    Name: "example_attribute",
-                    Value: types.StringValue(clientInfo["example_field"].(string)),
-                },
-            },
-        },
-    }
-
-    diags := resp.State.Set(ctx, &state)
-    resp.Diagnostics.Append(diags...)
-}
+	opts := providerserver.ServeOpts{
+		// Address is the location where your provider will run.
+		// For now, we're using a local address for simplicity. 
+		Address: "goldmansachs.com/iam/onegs/oauth-client-management",
+		Debug:   debug,
+	
