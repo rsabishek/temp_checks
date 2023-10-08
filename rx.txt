@@ -1,78 +1,39 @@
-// provider.go
+// main.go
 
-package provider
+package main
 
 import (
 	"context"
-	"os"
-	// Import other necessary packages based on your API client and other requirements
+	"flag"
+	"log"
 
-	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/path"
-	"github.com/hashicorp/terraform-plugin-framework/provider"
-	"github.com/hashicorp/terraform-plugin-framework/schema"
+	"github.com/hashicorp/terraform-plugin-framework/providerserver"
+	"goldmansachs.com/iam/onegs/oauth-client-management/internal/provider"
 )
 
-// Ensure the implementation satisfies the expected interfaces.
+// If you have specific build or versioning tools, you can use go generate for them
+// For now, we'll keep it simple
+
 var (
-	_ provider.Provider = &oauthClientProvider{}
+	// this will be set by the build configuration, to appropriate values for the compiled binary.
+	version string = "dev"
 )
 
-// New is a helper function to create a new instance of our provider.
-func New(version string) func() provider.Provider {
-	return func() provider.Provider {
-		return &oauthClientProvider{
-			version: version,
-		}
+func main() {
+	var debug bool
+
+	flag.BoolVar(&debug, "debug", false, "set to true to run the provider with support for debuggers like delve")
+	flag.Parse()
+
+	opts := providerserver.ServeOpts{
+		// Address is the location where your provider will run.
+		// For now, we're using a local address for simplicity. 
+		Address: "goldmansachs.com/iam/onegs/oauth-client-management",
+		Debug:   debug,
 	}
-}
 
-// oauthClientProvider is our provider implementation.
-type oauthClientProvider struct {
-	// version is set to the provider version. For simplicity, we'll use "dev" when building locally.
-	version string
-}
-
-// Metadata returns the provider type name.
-func (p *oauthClientProvider) Metadata(_ context.Context, _ provider.MetadataRequest, resp *provider.MetadataResponse) {
-	resp.TypeName = "oauth_client"
-	resp.Version = p.version
-}
-
-// Schema defines the provider-level schema for configuration data.
-func (p *oauthClientProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
-	resp.Schema = schema.Schema{
-		Description: "Provider for managing OAuth client IDs in OneGS.",
-		Attributes: map[string]schema.Attribute{
-			"client_name": {
-				Description: "Name for the OAuth client.",
-				Required:    true,
-			},
-			"client_secret": {
-				Description: "Secret for the OAuth client.",
-				Required:    true,
-				Sensitive:   true,
-			},
-			// Add more attributes as necessary
-		},
-	}
-}
-
-func (p *oauthClientProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
-	// Implement any necessary provider-level configuration here
-	// For example, setting up API client using the provided configuration data
-}
-
-// DataSources defines the data sources implemented in the provider.
-// This example assumes no data sources, but they can be added if necessary.
-func (p *oauthClientProvider) DataSources(_ context.Context) []func() datasource.DataSource {
-	return nil
-}
-
-// Resources defines the resources implemented in the provider.
-// This example assumes you'll add a resource for managing OAuth client IDs.
-func (p *oauthClientProvider) Resources(_ context.Context) []func() resource.Resource {
-	return []func() resource.Resource{
-		// Add your OAuth client management resource here
+	err := providerserver.Serve(context.Background(), provider.New(version), opts)
+	if err != nil {
+		log.Fatal(err.Error())
 	}
 }
