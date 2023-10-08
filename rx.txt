@@ -1,42 +1,48 @@
-// resource_oauth_client.go
+// provider.go
 
 package provider
 
 import (
 	"context"
+	"os"
 	// Import other necessary packages based on your API client and other requirements
 
+	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/path"
-	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/schema"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
 var (
-	_ resource.Resource = &oauthClientResource{}
+	_ provider.Provider = &oauthClientProvider{}
 )
 
-func NewOAuthClientResource() resource.Resource {
-	return &oauthClientResource{}
+// New is a helper function to create a new instance of our provider.
+func New(version string) func() provider.Provider {
+	return func() provider.Provider {
+		return &oauthClientProvider{
+			version: version,
+		}
+	}
 }
 
-type oauthClientResource struct{}
-
-// oauthClientModel maps the resource schema data.
-type oauthClientModel struct {
-	ClientName   types.String `tfsdk:"client_name"`
-	ClientSecret types.String `tfsdk:"client_secret"`
-	ClientID     types.String `tfsdk:"client_id"` // This might be populated after creation
+// oauthClientProvider is our provider implementation.
+type oauthClientProvider struct {
+	// version is set to the provider version. For simplicity, we'll use "dev" when building locally.
+	version string
 }
 
-func (r *oauthClientResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+// Metadata returns the provider type name.
+func (p *oauthClientProvider) Metadata(_ context.Context, _ provider.MetadataRequest, resp *provider.MetadataResponse) {
 	resp.TypeName = "oauth_client"
+	resp.Version = p.version
 }
 
-func (r *oauthClientResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+// Schema defines the provider-level schema for configuration data.
+func (p *oauthClientProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Resource for managing OAuth client IDs in OneGS.",
+		Description: "Provider for managing OAuth client IDs in OneGS.",
 		Attributes: map[string]schema.Attribute{
 			"client_name": {
 				Description: "Name for the OAuth client.",
@@ -47,30 +53,26 @@ func (r *oauthClientResource) Schema(_ context.Context, _ resource.SchemaRequest
 				Required:    true,
 				Sensitive:   true,
 			},
-			"client_id": {
-				Description: "Generated client ID for the OAuth client.",
-				Computed:    true,
-			},
 			// Add more attributes as necessary
 		},
 	}
 }
 
-func (r *oauthClientResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	// Implement the logic to create a new OAuth client using your API
-	// Populate the client_id attribute after creation
+func (p *oauthClientProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
+	// Implement any necessary provider-level configuration here
+	// For example, setting up API client using the provided configuration data
 }
 
-func (r *oauthClientResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	// Implement the logic to read the details of an existing OAuth client using your API
+// DataSources defines the data sources implemented in the provider.
+// This example assumes no data sources, but they can be added if necessary.
+func (p *oauthClientProvider) DataSources(_ context.Context) []func() datasource.DataSource {
+	return nil
 }
 
-func (r *oauthClientResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	// Implement the logic to update an existing OAuth client using your API
+// Resources defines the resources implemented in the provider.
+// This example assumes you'll add a resource for managing OAuth client IDs.
+func (p *oauthClientProvider) Resources(_ context.Context) []func() resource.Resource {
+	return []func() resource.Resource{
+		// Add your OAuth client management resource here
+	}
 }
-
-func (r *oauthClientResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	// Implement the logic to delete an OAuth client using your API
-}
-
-// You can also add other methods like validation or import if required.
