@@ -1,33 +1,76 @@
-// main.go
+// resource_oauth_client.go
 
-package main
+package provider
 
 import (
 	"context"
-	"flag"
-	"log"
+	// Import other necessary packages based on your API client and other requirements
 
-	"github.com/hashicorp/terraform-plugin-framework/providerserver"
-	"goldmansachs.com/iam/onegs/oauth-client-management/internal/provider"
+	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// If you have specific build or versioning tools, you can use go generate for them
-// For now, we'll keep it simple
-
+// Ensure the implementation satisfies the expected interfaces.
 var (
-	// this will be set by the build configuration, to appropriate values for the compiled binary.
-	version string = "dev"
+	_ resource.Resource = &oauthClientResource{}
 )
 
-func main() {
-	var debug bool
+func NewOAuthClientResource() resource.Resource {
+	return &oauthClientResource{}
+}
 
-	flag.BoolVar(&debug, "debug", false, "set to true to run the provider with support for debuggers like delve")
-	flag.Parse()
+type oauthClientResource struct{}
 
-	opts := providerserver.ServeOpts{
-		// Address is the location where your provider will run.
-		// For now, we're using a local address for simplicity. 
-		Address: "goldmansachs.com/iam/onegs/oauth-client-management",
-		Debug:   debug,
-	
+// oauthClientModel maps the resource schema data.
+type oauthClientModel struct {
+	ClientName   types.String `tfsdk:"client_name"`
+	ClientSecret types.String `tfsdk:"client_secret"`
+	ClientID     types.String `tfsdk:"client_id"` // This might be populated after creation
+}
+
+func (r *oauthClientResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "oauth_client"
+}
+
+func (r *oauthClientResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
+		Description: "Resource for managing OAuth client IDs in OneGS.",
+		Attributes: map[string]schema.Attribute{
+			"client_name": {
+				Description: "Name for the OAuth client.",
+				Required:    true,
+			},
+			"client_secret": {
+				Description: "Secret for the OAuth client.",
+				Required:    true,
+				Sensitive:   true,
+			},
+			"client_id": {
+				Description: "Generated client ID for the OAuth client.",
+				Computed:    true,
+			},
+			// Add more attributes as necessary
+		},
+	}
+}
+
+func (r *oauthClientResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	// Implement the logic to create a new OAuth client using your API
+	// Populate the client_id attribute after creation
+}
+
+func (r *oauthClientResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	// Implement the logic to read the details of an existing OAuth client using your API
+}
+
+func (r *oauthClientResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	// Implement the logic to update an existing OAuth client using your API
+}
+
+func (r *oauthClientResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	// Implement the logic to delete an OAuth client using your API
+}
+
+// You can also add other methods like validation or import if required.
