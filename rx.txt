@@ -1,52 +1,87 @@
-Sure, you can set the bearer token as a field of the `Client` struct and then add it as an `Authorization` header to your requests. 
 
-Here's how you can modify the client to support bearer tokens:
+Certainly! Let's integrate the client methods within your `resource_oauth_client.go`. We'll use the `CreateOAuthClient` and `ReadOAuthClient` methods from the client within the `Create` and `Read` functions of your Terraform resource respectively.
+
+Here's the code for the `resource_oauth_client.go` file:
 
 ```go
-// api/client.go (modifications highlighted)
+package provider
 
-package api
+import (
+	"context"
 
-// ... other imports ...
+	"YOUR_PROVIDER_PATH/api" // Make sure to use the correct import path to your API client
+	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type Client struct {
-	HTTPClient   *http.Client
-	BearerToken  string // Add this field
+// ... Existing code ...
+
+// Create a new OAuth Client.
+func (r *oauthClientResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	// Retrieve values from plan
+	var plan oauthClientResourceModel
+	diags := req.Plan.Get(ctx, &plan)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	client := api.NewClient() // Initialize the API client
+
+	newOAuthClient, err := client.CreateOAuthClient(&api.OAuthClient{
+		ClientName:   plan.ClientName.Value,
+		ClientSecret: plan.ClientSecret.Value,
+	})
+
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Failed to create OAuth client",
+			"Could not create OAuth client: "+err.Error(),
+		)
+		return
+	}
+
+	// Update the plan with the ID from the newly created OAuth client
+	plan.ClientID = types.StringValue(newOAuthClient.ClientID)
+
+	// Set the new state
+	diags = resp.State.Set(ctx, plan)
+	resp.Diagnostics.Append(diags...)
 }
 
-func NewClient() *Client {
-	return &Client{
-		HTTPClient:  &http.Client{},
-		BearerToken: "YOUR_HARD_CODED_TOKEN", // Set it here
+// Read OAuth Client details.
+func (r *oauthClientResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	// Get current state
+	var state oauthClientResourceModel
+	diags := req.State.Get(ctx, &state)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
+
+	client := api.NewClient() // Initialize the API client
+
+	oauthClient, err := client.ReadOAuthClient(state.ClientID.Value)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Failed to read OAuth client",
+			"Could not read OAuth client with ID "+state.ClientID.Value+": "+err.Error(),
+		)
+		return
+	}
+
+	// Update the state with the fetched data
+	state.ClientName = types.StringValue(oauthClient.ClientName)
+	state.ClientSecret = types.StringValue(oauthClient.ClientSecret)
+	// If there are more fields in your API response, set them here...
+
+	// Set the new state
+	diags = resp.State.Set(ctx, &state)
+	resp.Diagnostics.Append(diags...)
 }
 
-// Now, before making any HTTP request, add the token to the request headers:
-
-func (c *Client) CreateOAuthClient(oc *OAuthClient) (*OAuthClient, error) {
-	body, err := json.Marshal(oc)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", baseURL+"/path_to_create_endpoint", bytes.NewBuffer(body))
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("Authorization", "Bearer "+c.BearerToken) // Set the token here
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := c.HTTPClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	// ... rest of the function ...
-}
-
-// Apply similar modifications to ReadOAuthClient and other methods as well.
+// ... Rest of the resource functions (Update, Delete, etc.) ...
 ```
 
-By adding the `BearerToken` field to your `Client` struct, you can easily set the bearer token and use it in all your API requests. Note that hardcoding tokens in production is not recommended for security reasons. This is just for your initial testing. In the future, consider a more dynamic way of setting and refreshing tokens.
+Please note the placeholder `YOUR_PROVIDER_PATH` which should be replaced with the actual path to your API client in your project. This code integrates the client we designed previously into the Terraform resource's Create and Read methods. You can follow similar patterns for Update and Delete methods.
