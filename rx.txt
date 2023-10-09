@@ -1,41 +1,27 @@
+Sure, you can set the bearer token as a field of the `Client` struct and then add it as an `Authorization` header to your requests. 
 
-Certainly! Given that you're building a Terraform provider to interact with your OAuth client management APIs, you'd need a Go client to make HTTP requests to your API. This client will be used by the resources and data sources in your provider.
-
-For the sake of brevity, I'll create a basic client structure for your OAuth client management API. This will include methods to create, read, update, and delete OAuth clients.
-
-Let's get started with the client:
+Here's how you can modify the client to support bearer tokens:
 
 ```go
-// api/client.go
+// api/client.go (modifications highlighted)
 
 package api
 
-import (
-	"bytes"
-	"encoding/json"
-	"errors"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-)
-
-const baseURL = "https://dev.authn-control-plane.site.gs.com" // Update this if needed
-
-type OAuthClient struct {
-	ClientName   string `json:"client_name"`
-	ClientSecret string `json:"client_secret"`
-	ClientID     string `json:"client_id,omitempty"`
-}
+// ... other imports ...
 
 type Client struct {
-	HTTPClient *http.Client
+	HTTPClient   *http.Client
+	BearerToken  string // Add this field
 }
 
 func NewClient() *Client {
 	return &Client{
-		HTTPClient: &http.Client{},
+		HTTPClient:  &http.Client{},
+		BearerToken: "YOUR_HARD_CODED_TOKEN", // Set it here
 	}
 }
+
+// Now, before making any HTTP request, add the token to the request headers:
 
 func (c *Client) CreateOAuthClient(oc *OAuthClient) (*OAuthClient, error) {
 	body, err := json.Marshal(oc)
@@ -43,61 +29,24 @@ func (c *Client) CreateOAuthClient(oc *OAuthClient) (*OAuthClient, error) {
 		return nil, err
 	}
 
-	resp, err := c.HTTPClient.Post(baseURL+"/path_to_create_endpoint", "application/json", bytes.NewBuffer(body))
+	req, err := http.NewRequest("POST", baseURL+"/path_to_create_endpoint", bytes.NewBuffer(body))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Authorization", "Bearer "+c.BearerToken) // Set the token here
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New("API returned non-200 status code")
-	}
-
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var result OAuthClient
-	err = json.Unmarshal(data, &result)
-	if err != nil {
-		return nil, err
-	}
-
-	return &result, nil
+	// ... rest of the function ...
 }
 
-func (c *Client) ReadOAuthClient(clientID string) (*OAuthClient, error) {
-	resp, err := c.HTTPClient.Get(fmt.Sprintf("%s/path_to_read_endpoint/%s", baseURL, clientID))
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New("API returned non-200 status code")
-	}
-
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var result OAuthClient
-	err = json.Unmarshal(data, &result)
-	if err != nil {
-		return nil, err
-	}
-
-	return &result, nil
-}
-
-// Similarly, you can add UpdateOAuthClient and DeleteOAuthClient methods
-
-// func (c *Client) UpdateOAuthClient(oc *OAuthClient) (*OAuthClient, error) { ... }
-// func (c *Client) DeleteOAuthClient(clientID string) error { ... }
+// Apply similar modifications to ReadOAuthClient and other methods as well.
 ```
 
-This is a basic client that sends HTTP requests to create and read OAuth clients. You can expand upon this by adding methods for update and delete operations, error handling, retries, etc.
-
-Remember to update the paths (`path_to_create_endpoint`, `path_to_read_endpoint`, etc.) to the actual endpoints exposed by your API.
+By adding the `BearerToken` field to your `Client` struct, you can easily set the bearer token and use it in all your API requests. Note that hardcoding tokens in production is not recommended for security reasons. This is just for your initial testing. In the future, consider a more dynamic way of setting and refreshing tokens.
