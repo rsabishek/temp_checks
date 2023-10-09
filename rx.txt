@@ -1,87 +1,32 @@
+type providerConfig struct {
+	// ... other fields
+	BearerToken types.String `tfsdk:"bearer_token"`
+}
 
-Certainly! Let's integrate the client methods within your `resource_oauth_client.go`. We'll use the `CreateOAuthClient` and `ReadOAuthClient` methods from the client within the `Create` and `Read` functions of your Terraform resource respectively.
+func (p *provider) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
+	return tfsdk.Schema{
+		Attributes: map[string]tfsdk.Attribute{
+			// ... existing attributes
+			"bearer_token": {
+				Type:        types.StringType,
+				Required:    true,
+				Description: "The bearer token used for authentication.",
+			},
+		},
+	}, nil
+}
 
-Here's the code for the `resource_oauth_client.go` file:
-
-```go
-package provider
-
-import (
-	"context"
-
-	"YOUR_PROVIDER_PATH/api" // Make sure to use the correct import path to your API client
-	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-)
-
-// ... Existing code ...
-
-// Create a new OAuth Client.
-func (r *oauthClientResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	// Retrieve values from plan
-	var plan oauthClientResourceModel
-	diags := req.Plan.Get(ctx, &plan)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	client := api.NewClient() // Initialize the API client
-
-	newOAuthClient, err := client.CreateOAuthClient(&api.OAuthClient{
-		ClientName:   plan.ClientName.Value,
-		ClientSecret: plan.ClientSecret.Value,
-	})
-
-	if err != nil {
+func (p *provider) Configure(ctx context.Context, req tfsdk.ConfigureProviderRequest, resp *tfsdk.ConfigureProviderResponse) {
+	config := providerConfig{}
+	if err := req.Config.Get(ctx, &config); err != nil {
 		resp.Diagnostics.AddError(
-			"Failed to create OAuth client",
-			"Could not create OAuth client: "+err.Error(),
+			"Error parsing configuration",
+			"An unexpected error was encountered while parsing the provider configuration: "+err.Error(),
 		)
 		return
 	}
 
-	// Update the plan with the ID from the newly created OAuth client
-	plan.ClientID = types.StringValue(newOAuthClient.ClientID)
-
-	// Set the new state
-	diags = resp.State.Set(ctx, plan)
-	resp.Diagnostics.Append(diags...)
+	// Initialize client with the bearer token
+	client := hashicups.NewClient(config.BearerToken.Value)
+	p.client = client
 }
-
-// Read OAuth Client details.
-func (r *oauthClientResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	// Get current state
-	var state oauthClientResourceModel
-	diags := req.State.Get(ctx, &state)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	client := api.NewClient() // Initialize the API client
-
-	oauthClient, err := client.ReadOAuthClient(state.ClientID.Value)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Failed to read OAuth client",
-			"Could not read OAuth client with ID "+state.ClientID.Value+": "+err.Error(),
-		)
-		return
-	}
-
-	// Update the state with the fetched data
-	state.ClientName = types.StringValue(oauthClient.ClientName)
-	state.ClientSecret = types.StringValue(oauthClient.ClientSecret)
-	// If there are more fields in your API response, set them here...
-
-	// Set the new state
-	diags = resp.State.Set(ctx, &state)
-	resp.Diagnostics.Append(diags...)
-}
-
-// ... Rest of the resource functions (Update, Delete, etc.) ...
-```
-
-Please note the placeholder `YOUR_PROVIDER_PATH` which should be replaced with the actual path to your API client in your project. This code integrates the client we designed previously into the Terraform resource's Create and Read methods. You can follow similar patterns for Update and Delete methods.
