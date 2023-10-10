@@ -1,32 +1,36 @@
-type providerConfig struct {
-	// ... other fields
-	BearerToken types.String `tfsdk:"bearer_token"`
-}
 
-func (p *provider) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
-		Attributes: map[string]tfsdk.Attribute{
-			// ... existing attributes
-			"bearer_token": {
-				Type:        types.StringType,
-				Required:    true,
-				Description: "The bearer token used for authentication.",
-			},
-		},
-	}, nil
-}
 
-func (p *provider) Configure(ctx context.Context, req tfsdk.ConfigureProviderRequest, resp *tfsdk.ConfigureProviderResponse) {
-	config := providerConfig{}
-	if err := req.Config.Get(ctx, &config); err != nil {
-		resp.Diagnostics.AddError(
-			"Error parsing configuration",
-			"An unexpected error was encountered while parsing the provider configuration: "+err.Error(),
-		)
-		return
-	}
+```batch
+@echo off
+REM Building the Go application and then copying the resultant exe
 
-	// Initialize client with the bearer token
-	client := hashicups.NewClient(config.BearerToken.Value)
-	p.client = client
-}
+set goFilePath=C:\path\to\your\go\source\main.go
+set outputExePath=C:\path\to\output\directory\yourApp.exe
+set destPath=C:\path\to\destination\yourApp.exe
+
+REM Building the Go application
+cd C:\path\to\your\go\source
+go build -o "%outputExePath%" "%goFilePath%"
+
+if %errorlevel% neq 0 (
+    echo Build failed.
+    exit /b 1
+)
+
+REM Copying the exe file to the destination
+copy "%outputExePath%" "%destPath%"
+
+if %errorlevel% == 0 (
+    echo File copied successfully!
+) else (
+    echo Failed to copy the file.
+)
+```
+
+1. Replace `C:\path\to\your\go\source\main.go` with the path to your main Go source file.
+2. Replace `C:\path\to\output\directory\yourApp.exe` with where you want the executable to be generated.
+3. Replace `C:\path\to\destination\yourApp.exe` with where you want to copy the executable to.
+
+Save the script as a `.bat` or `.cmd` file and execute it. The script will build your Go application, producing an `.exe` file, and then copy that file to the specified destination.
+
+Remember to ensure you have the necessary permissions to write to the output and
