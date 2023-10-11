@@ -1,36 +1,105 @@
 
 
-```batch
-@echo off
-REM Building the Go application and then copying the resultant exe
+`
+The corresponding Terraform resource schema will look like:
 
-set goFilePath=C:\path\to\your\go\source\main.go
-set outputExePath=C:\path\to\output\directory\yourApp.exe
-set destPath=C:\path\to\destination\yourApp.exe
-
-REM Building the Go application
-cd C:\path\to\your\go\source
-go build -o "%outputExePath%" "%goFilePath%"
-
-if %errorlevel% neq 0 (
-    echo Build failed.
-    exit /b 1
-)
-
-REM Copying the exe file to the destination
-copy "%outputExePath%" "%destPath%"
-
-if %errorlevel% == 0 (
-    echo File copied successfully!
-) else (
-    echo Failed to copy the file.
-)
+```go
+func (r oauthClientResource) Schema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
+    return tfsdk.Schema{
+        Attributes: map[string]tfsdk.Attribute{
+            "did": {
+                Type:     types.NumberType,
+                Optional: true,
+                Computed: true,
+            },
+            "name": {
+                Type:     types.StringType,
+                Required: true,
+            },
+            "description": {
+                Type:     types.StringType,
+                Required: true,
+            },
+            "redirectUris": {
+                Type:     types.ListType{ElemType: types.StringType},
+                Required: true,
+            },
+            "riskProfile": {
+                Type:     types.NumberType,
+                Required: true,
+            },
+            "clientAuth": {
+                Type:     types.ObjectType{
+                    Attributes: map[string]tfsdk.Attribute{
+                        "type": {
+                            Type:     types.StringType,
+                            Required: true,
+                        },
+                        "secret": {
+                            Type:     types.StringType,
+                            Required: true,
+                            Sensitive: true,
+                        },
+                    },
+                },
+                Required: true,
+            },
+            "applicationType": {
+                Type:     types.StringType,
+                Required: true,
+            },
+            "oidc": {
+                Type:     types.ObjectType{
+                    Attributes: map[string]tfsdk.Attribute{
+                        "realm": {
+                            Type:     types.StringType,
+                            Required: true,
+                        },
+                        "mfa": {
+                            Type:     types.ObjectType{
+                                Attributes: map[string]tfsdk.Attribute{
+                                    "mfaRequired": {
+                                        Type:     types.BoolType,
+                                        Required: true,
+                                    },
+                                    "mfaProviders": {
+                                        // ...define further nested attributes here...
+                                    },
+                                },
+                            },
+                            Required: true,
+                        },
+                    },
+                },
+                Required: true,
+            },
+            "sso": {
+                Type:     types.ObjectType{
+                    Attributes: map[string]tfsdk.Attribute{
+                        "ssoEnabled": {
+                            Type:     types.BoolType,
+                            Required: true,
+                        },
+                    },
+                },
+                Required: true,
+            },
+            "acr": {
+                Type:     types.ObjectType{
+                    Attributes: map[string]tfsdk.Attribute{
+                        "acrEnabled": {
+                            Type:     types.BoolType,
+                            Required: true,
+                        },
+                    },
+                },
+                Required: true,
+            },
+        },
+    }, nil
+}
 ```
 
-1. Replace `C:\path\to\your\go\source\main.go` with the path to your main Go source file.
-2. Replace `C:\path\to\output\directory\yourApp.exe` with where you want the executable to be generated.
-3. Replace `C:\path\to\destination\yourApp.exe` with where you want to copy the executable to.
+This is a starting point, and you might need to adjust based on the exact requirements and constraints of your application.
 
-Save the script as a `.bat` or `.cmd` file and execute it. The script will build your Go application, producing an `.exe` file, and then copy that file to the specified destination.
-
-Remember to ensure you have the necessary permissions to write to the output and
+Remember, the `Required` fields are those which must be specified by the user in their Terraform configuration. The `Optional` fields are those which they can provide, but if they don't, the default will be used or it might be computed during the resource lifecycle. The `Computed` fields are those which are computed during the resource's lifecycle and not specified by the user. You can adjust these based on the needs of your application and how you expect the user to interact with the resource.
