@@ -1,0 +1,42 @@
+Absolutely. Here's how you might define a Terraform configuration that uses the `oauth_client` resource based on the schema provided:
+
+```hcl
+resource "your_provider_name_oauth_client" "example_client" {
+  name        = "test-client-xyz"
+  description = "test-client-create"
+  redirect_uris = [
+    "https://localhost:8080",
+    "https://localhost:8081"
+  ]
+  risk_profile = 1
+
+  client_auth = {
+    type   = "SECRET"
+    secret = "94e8b2a3cdff4ea8b8fb7d51ed380eea794e8b2a3cdff4ea8b8fb7d51ed380ea1"
+  }
+
+  application_type = "web"
+
+  oidc = {
+    realm = "INSTITUTIONAL"
+    mfa = {
+      mfa_required = true
+      # if mfaProviders and other attributes are needed, they should be added here following a similar pattern.
+    }
+  }
+
+  # ... other fields if any, based on the schema ...
+}
+```
+
+This HCL configuration defines a resource of type `oauth_client` (assuming the provider's name is `your_provider_name`). The attributes used here are based on the schema attributes you provided.
+
+Remember to replace `"your_provider_name"` with the actual name of your provider.
+
+To apply this configuration, you'd use the typical Terraform commands:
+
+1. `terraform init` to initialize the working directory.
+2. `terraform plan` to see the execution plan.
+3. `terraform apply` to apply the changes and create the OAuth client.
+
+Make sure the provider is properly configured to communicate with your backend/API before applying this configuration.
