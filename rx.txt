@@ -138,3 +138,83 @@ func (r *OauthClientResource) Create(ctx context.Context, req tfsdk.CreateResour
 ```
 
 The function `resourceDataToAPIMap` does the transformation of your Terraform schema data to your API's expected payload structure. You then marshal this to JSON (or whatever format your API expects) and make the API call. The response from the API call, particularly the ID of the created resource, is then set to the Terraform state using `resp.Id`. Adjustments might be needed based on the specifics of your API and its response structure.
+
+
+Certainly, if you're using a structured approach to send and receive API data, your client code would typically have Go structures that mirror the API's JSON payload. This is useful for type-safety, easier handling of data, and for encoding/decoding JSON data. 
+
+Here's how the client code might look given the previous discussions and the `OAuthClient` JSON structure you provided earlier:
+
+**`client.go`**:
+```go
+package api
+
+import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"net/http"
+)
+
+type Client struct {
+	BaseURL     string
+	BearerToken string
+}
+
+// OAuthClient represents the structure of the client you're creating or retrieving from the API.
+type OAuthClient struct {
+	Name         string   `json:"name"`
+	Description  string   `json:"description"`
+	RedirectUris []string `json:"redirectUris"`
+	// ... other fields...
+}
+
+// NewClient creates a new API client with a given bearer token.
+func NewClient(bearerToken string) *Client {
+	return &Client{
+		BaseURL:     "https://your-api-endpoint.com",
+		BearerToken: bearerToken,
+	}
+}
+
+// CreateOAuthClient sends a request to create a new OAuthClient.
+func (c *Client) CreateOAuthClient(clientData *OAuthClient) (*OAuthClient, error) {
+	// Convert your data structure to JSON
+	jsonData, err := json.Marshal(clientData)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, c.BaseURL+"/path/to/oauth/client/endpoint", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Authorization", "Bearer "+c.BearerToken)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// Assuming the API returns the created OAuth client in the response
+	var createdClient OAuthClient
+	err = json.NewDecoder(resp.Body).Decode(&createdClient)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New("API responded with status: " + resp.Status)
+	}
+
+	return &createdClient, nil
+}
+
+// ... other methods ...
+```
+
+Now, in your `resource_oauth_client.go`, when you want to create an `OAuthClient`, you'd populate an instance of this `OAuthClient` struct and pass it to the `CreateOAuthClient` method of your client.
+
+It's essential to have the payload structure known to the client for clean and type-safe code. The advantage is that you can utilize Go's type system to catch potential issues at compile time rather than runtime.
