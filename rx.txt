@@ -1,5 +1,87 @@
 
+Certainly! Using the JSON you provided earlier, here's the schema definition for the `oauth_client` resource inside the `resource_oauth_client.go` file:
 
+```go
+package provider
+
+import (
+	"context"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/schema"
+)
+
+type OauthClientResource struct {
+	client *api.Client
+}
+
+func (r OauthClientResource) Schema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
+	return tfsdk.Schema{
+		Attributes: map[string]tfsdk.Attribute{
+			"did": schema.NumberAttribute{
+				Type:     types.NumberType,
+				Computed: true,
+			},
+			"name": schema.StringAttribute{
+				Type:     types.StringType,
+				Required: true,
+			},
+			"description": schema.StringAttribute{
+				Type:     types.StringType,
+				Required: true,
+			},
+			"redirect_uris": schema.ListAttribute{
+				ElemType: schema.StringAttribute{
+					Type: types.StringType,
+				},
+				Required: true,
+			},
+			"risk_profile": schema.NumberAttribute{
+				Type:     types.NumberType,
+				Required: true,
+			},
+			"client_auth": schema.ObjectAttribute{
+				Attributes: map[string]tfsdk.Attribute{
+					"type": schema.StringAttribute{
+						Type:     types.StringType,
+						Required: true,
+					},
+					"secret": schema.StringAttribute{
+						Type:     types.StringType,
+						Optional: true,  // If it's not always required
+					},
+				},
+			},
+			"application_type": schema.StringAttribute{
+				Type:     types.StringType,
+				Required: true,
+			},
+			"oidc": schema.ObjectAttribute{
+				Attributes: map[string]tfsdk.Attribute{
+					"realm": schema.StringAttribute{
+						Type:     types.StringType,
+						Required: true,
+					},
+					"mfa": schema.ObjectAttribute{
+						Attributes: map[string]tfsdk.Attribute{
+							"mfa_required": schema.BoolAttribute{
+								Type:     types.BoolType,
+								Required: true,
+							},
+							// ... continue with other attributes like mfaProviders if needed ...
+						},
+					},
+				},
+			},
+			// ... similar pattern for `sso`, `acr`, and other fields...
+		},
+	}, nil
+}
+
+// ... the rest of the resource implementation ...
+```
+
+Do note that this is a simplified version, and depending on the actual behavior and requirements of each attribute (like if they're optional, have default values, etc.), you might need to modify the schema accordingly.
 `
 The corresponding Terraform resource schema will look like:
 
