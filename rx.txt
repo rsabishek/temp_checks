@@ -35,4 +35,24 @@ func ResourceDataToAPIPayload(data oauthClientResourceModel) (map[string]interfa
     }
 
     // SingleNestedAttributes
-    clientAuth :=
+    clientAuth := make(map[string]interface{})
+    clientAuth["type"] = data.ClientAuth.Type.Value
+    clientAuth["secret"] = data.ClientAuth.Secret.Value
+    payload["clientAuth"] = clientAuth
+
+    oidc := make(map[string]interface{})
+    oidc["realm"] = data.OIDC.Realm.Value
+    payload["oidc"] = oidc
+
+    sso := make(map[string]interface{})
+    sso["ssoEnabled"] = data.SSO.SSOEnabled.Value
+    payload["sso"] = sso
+
+    acr := make(map[string]interface{})
+    acr["acrEnabled"] = data.ACR.ACREnabled.Value
+    payload["acr"] = acr
+
+    // ... Continue for other nested attributes
+
+    return payload, nil
+}
