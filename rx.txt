@@ -1,1 +1,55 @@
 
+package myprovider
+
+import (
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type oauthClientResourceModel struct {
+	// For "description" attribute
+	Description types.String `tfsdk:"description"`
+
+	// For "client_id" attribute
+	ClientID types.String `tfsdk:"client_id"`
+
+	// For "name" attribute
+	Name types.String `tfsdk:"name"`
+
+	// For "redirect_uris" attribute, which is a list of strings
+	RedirectURIs []types.String `tfsdk:"redirect_uris"`
+
+	// For "risk_profile" attribute
+	RiskProfile types.Number `tfsdk:"risk_profile"`
+
+	// Nested attributes for "client_auth" block
+	ClientAuth struct {
+		Type   types.String `tfsdk:"type"`
+		Secret types.String `tfsdk:"secret"`
+	} `tfsdk:"client_auth"`
+
+	// For "application_type" attribute
+	ApplicationType types.String `tfsdk:"application_type"`
+
+	// Nested attributes for "oidc" block
+	OIDC struct {
+		Realm    types.String `tfsdk:"realm"`
+		MfaRules struct {
+			Required types.Bool `tfsdk:"required"`
+		} `tfsdk:"mfa_rules"`
+		// ... Continue with other attributes for "oidc" block if needed
+	} `tfsdk:"oidc"`
+
+	// Nested attributes for "sso" block
+	SSO struct {
+		Enabled types.Bool `tfsdk:"enabled"`
+		// ... Continue with other attributes for "sso" block if needed
+	} `tfsdk:"sso"`
+
+	// Nested attributes for "acr" block
+	ACR struct {
+		Required types.Bool `tfsdk:"required"`
+		// ... Continue with other attributes for "acr" block if needed
+	} `tfsdk:"acr"`
+
+	// Continue adding other attributes as needed
+}
