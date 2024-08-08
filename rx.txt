@@ -1,9 +1,1 @@
-In this AD LDS deployment across two data centers, each with two nodes, the replication strategy follows a multi-master model. All nodes (A1, A2, B1, B2) are peers and can independently accept updates. Intra-site replication occurs frequently within each data center (between Node A1 and A2, and between Node B1 and B2), ensuring that updates are quickly propagated locally. Inter-site replication between Data Center A and Data Center B (between Node A1 and B1, and between Node A2 and B2) ensures data consistency across the entire deployment, though with a possible slight delay due to network latency between sites.
-
-Conflict resolution in this multi-master environment is handled using a "last writer wins" approach. If the same directory object is modified simultaneously on different nodes, the change with the most recent timestamp will be the one that is ultimately accepted and propagated throughout the entire network. This ensures that all nodes eventually converge to a consistent state, even in the event of simultaneous updates.
-
-
-
-
-
 
