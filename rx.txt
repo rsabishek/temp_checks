@@ -1,1 +1,6 @@
 
+fields @timestamp, @message, @LogStream
+| filter @timestamp between 1704067200000 and 1735689599000
+| filter @LogStream like "audit_logs.ip.%"
+| parse @message /.*\|\s*(?<status>success|failure)\s*\|.*/ 
+| stats count() as total_count by status
